@@ -3,6 +3,7 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            
         }
         header, footer {
             background-color: #333;
@@ -55,4 +56,18 @@
         }
         form button:hover {
             background-color: #555;
+        }
+
+        .lin{
+    
+            color: inherit;
+            text-decoration: none;
+
+            
+
+        }
+
+        .tck{
+            color: inherit;
+            text-decoration: none;
         }

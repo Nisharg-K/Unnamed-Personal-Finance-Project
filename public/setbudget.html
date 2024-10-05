@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Budget</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Set Your Budget</h1>
+    </header>
+
+    <main>
+        <section id="set-budget">
+            <form action="/set-budget" method="POST">
+                <div>
+                    <label for="budget">Enter Your Budget</label>
+                    <input type="number" id="budget" name="budget" required>
+                </div>
+                <button type="submit">Set Budget</button>
+            </form>
+        </section>
+
+        <section id="back-to-expenses">
+            <a href="index.html" class="lin">Back to Expense Submission</a>
+        </section>
+    </main>
+
+    
+</body>
+</html>
+<script>
+    // Handle form submission for setting the budget
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from redirecting or reloading
+
+        // Collect form data
+        const formData = new FormData(event.target);
+
+        // Send the budget data using Fetch API
+        fetch('/set-budget', {
+            method: 'POST',
+            body: new URLSearchParams(formData), // Send form data as URL-encoded
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the success response (e.g., update the UI with new budget)
+            alert(data.message); // Show a message (you can replace this with any UI update)
+            console.log('New budget:', data.budget);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>

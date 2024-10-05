@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Overview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px; /* Adds space between the balls */
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .ball {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-image: url("https://wallpapers.com/images/featured/colorful-abstract-background-rra8u4adw1ubypzl.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .ball:hover {
+            transform: scale(1.1);
+        }
+
+        .ball-budget {
+            background: rgba(0, 128, 255, 0.3);
+        }
+
+        .ball-expenses {
+            background: rgba(0, 255, 128, 0.3);
+        }
+
+        .ball p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .savings-tips {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .savings-tips p {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ball ball-budget" id="budgetBall" onclick="location.href='setbudget.html';">
+            <div>
+                <p id="budgetLabel">Budget: $0</p>
+            </div>
+        </div>
+
+        <div class="ball ball-expenses" id="expenseBall" onclick="location.href='index.html';">
+            <div>
+                <p id="expensesLabel">Expenses: $0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Savings Tips Section -->
+    <div class="savings-tips" id="savingsTips">
+        <p>Loading savings tips...</p>
+    </div>
+
+    <script>
+        function updateBallSizes(budget, expenses) {
+            const budgetBall = document.getElementById('budgetBall');
+            const expenseBall = document.getElementById('expenseBall');
+
+            const maxSize = 300; // Set maximum size for the balls (in pixels)
+            const minSize = 100; // Set minimum size for the balls (in pixels)
+
+            const budgetSize = Math.min(maxSize, Math.max(minSize, budget * 2)); // Ball size based on budget
+            const expenseSize = Math.min(maxSize, Math.max(minSize, expenses * 2)); // Ball size based on expenses
+
+            // Set the size of the budget ball
+            budgetBall.style.width = budgetSize + 'px';
+            budgetBall.style.height = budgetSize + 'px';
+
+            // Set the size of the expense ball
+            expenseBall.style.width = expenseSize + 'px';
+            expenseBall.style.height = expenseSize + 'px';
+        }
+
+        function provideSavingsTips(remainingBudget, expenses) {
+            const savingsTips = document.getElementById('savingsTips');
+            let tips = '';
+
+            if (expenses > remainingBudget) {
+                tips = 'You are overspending! Consider cutting down on non-essential expenses.';
+            } else if (remainingBudget - expenses > 100) {
+                tips = 'Great job! You have surplus funds. Consider putting some of it into savings or investments.';
+            } else {
+                tips = 'You are managing your budget well. Keep an eye on your spending to ensure you stay within your limits.';
+            }
+
+            savingsTips.innerHTML = `<p>${tips}</p>`;
+        }
+
+        function fetchFinancialData() {
+            fetch('/get-budget')
+                .then(response => response.json())
+                .then(data => {
+                    const remainingBudget = data.remainingBudget || 0;
+                    document.getElementById('budgetLabel').textContent = `Budget: $${remainingBudget}`;
+                    
+                    fetch('/get-expenses')
+                        .then(response => response.json())
+                        .then(expenseData => {
+                            const expenses = expenseData.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+                            const validExpenses = Math.min(expenses, remainingBudget);
+
+                            document.getElementById('expensesLabel').textContent = `Expenses: $${validExpenses}`;
+
+                            // Adjust ball sizes based on values
+                            updateBallSizes(remainingBudget, validExpenses);
+
+                            // Provide savings tips based on financial data
+                            provideSavingsTips(remainingBudget, validExpenses);
+                        })
+                        .catch(error => console.error('Error fetching expenses:', error));
+                })
+                .catch(error => console.error('Error fetching budget:', error));
+        }
+
+        // Fetch financial data on page load
+        window.onload = function() {
+            fetchFinancialData();
+        }
+    </script>
+</body>
+</html>

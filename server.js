@@ -1,48 +1,47 @@
 const express = require('express');
-const path = require('path');
 const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware to parse form data
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files from the 'public' directory
+let budget = 0; // Initialize the budget variable
+let expenses = []; // Store the expenses
+
+// Serve static files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Define route for the root URL
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Handle setting the budget
+app.post('/set-budget', (req, res) => {
+    budget = parseFloat(req.body.budget);
+    expenses = []; // Clear expenses when budget is reset
+    res.json({ message: 'Budget set successfully', budget }); // Send JSON response
 });
 
-// Handle form submission
-app.post('/submit-form', (req, res) => {
-    const formData = req.body;
-    console.log('Form Data:', formData);
-    res.send('Form submitted successfully!');
-});
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-
-// Initialize budget variable
-let budget = 1000; // Example initial budget
-
-// Handle form submission with expenses
+// Handle submitting expenses
 app.post('/submit-expense', (req, res) => {
-    const expense = parseFloat(req.body.expense);
-    const expenseInt = parseInt(req.body.expense, 10);
-    if (!isNaN(expenseInt) && expenseInt > 0) {
-        budget -= expenseInt;
-        console.log(`Expense: ${expenseInt}, Remaining Budget: ${budget}`);
-        res.send(`Expense recorded. Remaining budget: ${budget}`);
-    } else {
-        res.status(400).send('Invalid expense amount');
-    }
-
-    console.log('Budget:', budget);
+    const expense = {
+        amount: parseFloat(req.body.expense),
+        category: req.body.category,
+        date: req.body.date || new Date().toISOString().split('T')[0], // Use current date if not provided
+        description: req.body.description || ''
+    };
+    expenses.push(expense);
+    budget -= expense.amount; // Subtract expense from budget
+    res.json({ message: 'Expense added successfully', remainingBudget: budget, expenses }); // Respond with updated budget and expenses
 });
 
+// Provide the current budget
+app.get('/get-budget', (req, res) => {
+    res.json({ remainingBudget: budget });
+});
+
+// Provide the list of expenses
+app.get('/get-expenses', (req, res) => {
+    res.json({ expenses });
+});
+
+// Start server
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
+});
