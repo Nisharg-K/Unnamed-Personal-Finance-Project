@@ -1,4 +1,3 @@
-Hello World
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,40 +5,43 @@ Hello World
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Finance</title>
     <link rel="stylesheet" href="styles.css">
+    
 </head>
 <body>
+    <script src="script.js"></script>
     <header>
         <h1>Personal Finance Dashboard</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#income">Income</a></li>
-            <li><a href="#expenses">Expenses</a></li>
-            <li><a href="#savings">Savings</a></li>
-            <li><a href="#investments">Investments</a></li>
-        </ul>
-    </nav>
     <main>
-        <section id="overview">
-            <h2>Overview</h2>
-            <p>Summary of your financial status.</p>
-        </section>
-        <section id="income">
-            <h2>Income</h2>
-            <p>Details about your income sources.</p>
-        </section>
-        <section id="expenses">
-            <h2>Expenses</h2>
-            <p>Details about your expenses.</p>
-        </section>
-        <section id="savings">
-            <h2>Savings</h2>
-            <p>Details about your savings.</p>
-        </section>
-        <section id="investments">
-            <h2>Investments</h2>
-            <p>Details about your investments.</p>
+        <section id="add-transaction">
+            <h2>Add Transaction</h2>
+            <form action="/submit-form" method="POST">
+                <div>
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" name="amount" required>
+                </div>
+                <div>
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" required>
+                </div>
+                <div>
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" >
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description">
+                </div>
+                <div>
+                    <label for="time">Time</label>
+                    <input type="time" id="time" name="time" >
+                </div>
+                <div>
+                    <label for="real-time">Real Time</label>
+                    <input type="checkbox" id="real-time" name="real-time">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
         </section>
     </main>
     <footer>
